@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Inventory Request</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://unpkg.com/tachyons@4.10.0/css/tachyons.min.css"/>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="#">upgrade your browser</a> to improve your experience.</p>
+        <![endif]-->
+        <div>
+            <h1 class='center helvetica w-100'>Inventory Request</h1>
+        </div>
+
+        <div id='metric-divs' class="center black-80 w-90">
+                <div id='masks' class='pa3 ma3 metric helvetica dib'>
+                    <h1>Masks</h1>
+                    <h2 id='num-masks'>--</h2>
+                </div>
+                <div id='lysol' class='pa3 ma3 metric helvetica dib'>
+                    <h1>Lysol</h1>
+                    <h2 id='num-lysol'>--</h2>
+                </div>
+                <div id='sanitizer' class='pa3 ma3 metric helvetica dib'>
+                    <h1>Sanitizer</h1>
+                    <h2 id='num-sanitizer'>--</h2> 
+                </div>  
+        </div>
+
+        <div id="nav" class="center">
+            <div id="buttons">
+                <a id='request' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>Make a Request</a>
+                <a id='list' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>View Requests</a>
+                <a id='refresh' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-red'>Refresh</a>
+            </div>
+        </div>
+        
+        <script type="module" src="app.js" async defer></script>
+    </body>
+</html>
