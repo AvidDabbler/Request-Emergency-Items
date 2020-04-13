@@ -1,5 +1,5 @@
 import { agol } from './private.js';
-import { facility_render, get_survey_data, filter_data, clear_div } from './survey.js';
+import { inventory_render, get_survey_data, clear_div } from './survey.js';
 
 
 // HTML VARIALBES
@@ -10,16 +10,31 @@ const iframe_div = document.getElementById('ifrm');
 let inventory
 
 
-//STATIC URLS
-const confirmations = agol().management_geojson;
-const request_survey = agol().management_survey;
+//JSON URLS
+const requestGeo = agol().request_geojson;
+const updateGeo = agol().update_geojson;
+const shipmentGeo = agol().shipment_geojson;
+const confirmGeo = agol().confirm_geojson;
+
+
+//SURVEY URLS
+const requestSurvey = agol().request_survey;
+const updateSurvey = agol().update_survey;
+const shipmentSurvey = agol().shipment_survey;
+const confirmSurvey = agol().confirm_survey;
+
 
 
 //HTML SECTION SELECTORS
-const list_div = document.getElementById('list');
-const item = document.querySelector('button_popup');
+const mask = document.getElementById('mask');
+const lysol = document.getElementById('lysol');
+const sanitzer = document.getElementById('sanitzer');
 const main = document.querySelector('#main');
 const metric_divs = document.querySelector('#metric-divs');
+const num_masks = document.querySelector('#num-masks');
+const num_lysol = document.querySelector('#num-lysol');
+const num_sanitizers = document.querySelector('#num-sanitizer');
+const update_time = document.querySelector('#update-time');
 
 
 //POLYFILLS
@@ -55,19 +70,20 @@ const clickEvent = (event) => {
         return;
     
     }else if(!iframe_div){
+
         if(request_target){
 
         }
 
 
     // CLICK LIST ITEM
-    }else if (list_target){        
+    }else if (list || refresh){        
         console.log('list element click')
     
         let item = event.target.closest('.openpop');
         let url = item.getAttribute('data-url');
     
-        var ifrm = document.createElement('iframe');
+        let ifrm = document.createElement('iframe');
         ifrm.setAttribute('id', 'ifrm'); // assign an id
         ifrm.setAttribute(`src`, url);
     
@@ -90,10 +106,9 @@ const clickEvent = (event) => {
     }
 }
 
-console.log(confirmations)
-get_survey_data(confirmations).then(data =>{
-    inventory = data; 
-    console.log(data)
-    facility_render(data, list_div, id);
+get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+.then(data => {
+    inventory_render(data, num_masks, num_lysol, num_sanitizers, update_time);
+    return data;
 });
-window.addEventListener("click", clickEvent, false)
+window.addEventListener("click", clickEvent, false);

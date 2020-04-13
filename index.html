@@ -19,27 +19,32 @@
         <div>
             <h1 class='center helvetica w-100'>Inventory Request</h1>
         </div>
-
-        <div id='metric-divs' class="center black-80 w-90">
-                <div id='masks' class='pa3 ma3 metric helvetica dib'>
-                    <h1>Masks</h1>
-                    <h2 id='num-masks'>--</h2>
+        <div id="main" class='center'>
+            <div id='metric-divs' class="center black-80 w-90 flex flex-wrap">
+                    <div id='masks' class='center ph3 pb3 mh3 mb3 metric helvetica di'>
+                        <h1 class='ma0 pa0'>Masks</h1>
+                        <h2 id='num-masks'>--</h2>
+                    </div>
+                    <div id='lysol' class='center ph3 pb3 mh3 mb3 metric helvetica di'>
+                        <h1 class='ma0 pa0'>Lysol</h1>
+                        <h2 id='num-lysol'>--</h2>
+                    </div>
+                    <div id='sanitizer' class='center ph3 pb3 mh3 mb3 metric helvetica di'>
+                        <h1 class='ma0 pa0'>Sanitizer</h1>
+                        <h2 id='num-sanitizer'>--</h2> 
+                    </div>  
+            </div>
+            
+            <div class='center'>
+                <p class='b'>Last Updated:</p><p id='update-time'>--</p>
+            </div>
+    
+            <div id="nav" class="center">
+                <div id="buttons">
+                    <a id='request' class='w-60 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>Make a Request</a>
+                    <a id='list' class='w-60 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>View Requests</a>
+                    <a id='refresh' class='w-60 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-red'>Refresh</a>
                 </div>
-                <div id='lysol' class='pa3 ma3 metric helvetica dib'>
-                    <h1>Lysol</h1>
-                    <h2 id='num-lysol'>--</h2>
-                </div>
-                <div id='sanitizer' class='pa3 ma3 metric helvetica dib'>
-                    <h1>Sanitizer</h1>
-                    <h2 id='num-sanitizer'>--</h2> 
-                </div>  
-        </div>
-
-        <div id="nav" class="center">
-            <div id="buttons">
-                <a id='request' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>Make a Request</a>
-                <a id='list' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-blue'>View Requests</a>
-                <a id='refresh' class='w-70 helvetica f3 link dim br2 pv3 mb3 dib white bg-dark-red'>Refresh</a>
             </div>
         </div>
         

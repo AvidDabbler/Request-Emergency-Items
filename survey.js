@@ -1,65 +1,199 @@
+
+// INTERACTIVE HELPER FUNCTIONS
 const clear_div = async (div) => {
     div.innerHTML = '';
     return;
 };
 
-const searching = async (value, bool, div, data) => {
-    bool = true
-    div.innerHTML = 'Data is loading...';
-    clear_div(div);
-    let fv = filter_data(data, `${value}*`);
-    return fv;
+
+
+// DATA HELPER FUNCTIONS
+const newest_date = (data) => {
+    let newest;
+    for(let i = 0; i < data.features.length; i++){
+        if (i == 0 || data.features[i].properties.CreationDate > newest.properties.CreationDate){
+            newest = data.features[i];
+        }
+    };
+    return newest;
 };
 
-const facility_render = async (d, div, surveyI) => {
-    // DATA
-    div.innerHTML = "<p class='i'>Data is loading...</p>";
-
-    const sorted_data = d.sort(function (a, b) {
-        if (a.properties.new_requesting_facility <b.properties.new_requesting_facility) {
-            return -1;
-        }
-        if (b.properties.new_requesting_facility <a.properties.new_requesting_facility) {
-            return 1;
-        }
-        return 0;
-    });
-
-    div.innerHTML = '';
-    sorted_data.forEach(element => {
-        // FIELDS
-        const new_requesting_facility = element.properties.new_requesting_facility;
-        const requesting_facility = element.properties.requesting_facility;
-
-        // IMPORT SURVEY123 URL PARAMETERS FUNCTION
-        const confirmationURL  = `https://survey123.arcgis.com/share/${surveyI}?field:requesting_facility=${new_requesting_facility}`
-
-        div.innerHTML += 
-            `<div id='${new_requesting_facility}' class='button_popup fl w-100 '> 
-                <a class='openpop center fl w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' data-url="${confirmationURL}">
-                    <h2 class='f3 helvetica fl w-100'>${new_requesting_facility}</h2>
-                </a>
-            </div>`
-    
-    });
-};
-
-
-const get_survey_data = async (url) => {
+const fetch_json = async (url) => {
     const response = await fetch(url);
     const json = await response.json();
-
-    let data = json.features;
-    return data;
+    return await json;
 };
 
-const filter_data = (data, input) => {
-    const d = data.filter(d => {
-        return new RegExp('^' + input.toLowerCase().replace(/\*/g, '.*') + '$').test(d.properties.requesting_facility.toLowerCase())
-    });
-    return d
+const newest = (array, date) => {
+    let newest = []
+    for(let i = 0; i < array.features.length; i++){
+        if(array.features[i].properties.CreationDate > date){
+            newest.push(array.features[i])
+        }
+    };
+    return newest;
+};
+
+const fetch_newest = async (url, date) => {
+        let data = await fetch_json(url);
+        return newest(data, date)
+};
+
+const inventory_calc = (data) => {
+    let array;
+    let masks = 0
+    let sanitizer = 0
+    let lysol = 0
+    for(let i = 0; i < data.length; i++){
+
+        masks += data[i].properties.shipped_masks;
+        sanitizer += data[i].properties.shipped_sanitizers;
+        lysol += data[i].properties.shipped_lysols;
+        
+    }
+    return {
+        'masks': masks,
+        'sanitizers': sanitizer,
+        'lysols': lysol,
+    };
+};
+
+const total = (update, shipment, confirmation) => {
+    const list = ['masks', 'sanitizers', 'lysols']
+    
+    let obj = {};
+    let time = update.properties.CreationDate;
+    console.log(time)
+    for(let i = 0; i < list.length; i++){
+        let item = list[i];
+        obj[item] = (update.properties[`total_${item}`] + shipment[item]) - confirmation[item];
+    }
+    let time_list = [shipment, confirmation];
+
+    let i= 0;
+    for (let item of time_list){
+        if( i == 0 ||  item.time > time){
+            time = item.time;
+        }
+        i += 1;
+
+    }
+
+    obj['time'] = time;
+
+    return obj; 
+
+}
+
+
+
+
+
+// DATA APPLICATION FUNCTIONS
+const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
+
+    // GET THE TIME OF THE LAST INVENTORY UPDATE
+    const update = async () => {
+        let data = await fetch_json(updateGeo);
+        data = await newest_date(data);
+
+        return data;
+    };
+
+    let updateObj = await update();
+
+    // GET YOU SOME DATA!!!
+    const request_data = await fetch_newest(requestGeo, updateObj.properties.CreationDate);
+    const confirm_data = await fetch_newest(confirmGeo, updateObj.properties.CreationDate);
+    const shipment_data = await fetch_newest(shipmentGeo, updateObj.properties.CreationDate);
+
+    // THE LATEST NUMBERS ARE CALCULATED AS FOLLOWS (UPDATE.item + SHIPMENT_DATA.item) - CONFIRMATION_DATA.item 
+    const shipmentCalc = () => {
+        let masks = 0;
+        let sanitizers = 0;
+        let lysols = 0;
+        let time;
+
+        for(let i = 0; i < shipment_data.length; i++){
+            if(i == 0 || time < shipment_data[i].properties.CreationDate ){
+                time = shipment_data[i].properties.CreationDate;
+            }
+
+            masks += shipment_data[i].properties.shipped_masks;
+            sanitizers += shipment_data[i].properties.shipped_sanitizers;
+            lysols += shipment_data[i].properties.shipped_lysols;
+            
+        }
+        return {
+            'time': time,
+            'masks': masks,
+            'sanitizers': sanitizers,
+            'lysols': lysols,
+        };
+    };
+    const confirmationCalc = () => {
+        let masks = 0;
+        let sanitizers = 0;
+        let lysols = 0;
+        let time;
+
+        for(let i = 0; i < confirm_data.length; i++){
+            if(i == 0 || time < shipment_data[i].properties.CreationDate ){
+                time = shipment_data[i].properties.CreationDate;
+            }
+
+            masks += confirm_data[i].properties.confirmed_masks;
+            sanitizers += confirm_data[i].properties.confirmed_sanitizers;
+            lysols += confirm_data[i].properties.confirmed_lysols;
+            
+        }
+        return {
+            'time': time,
+            'masks': masks,
+            'sanitizers': sanitizers,
+            'lysols': lysols,
+        };
+    };
+
+    const shipmentTotal = shipmentCalc();
+    const confirmationTotal = confirmationCalc();
+
+    const t = total(updateObj, shipmentTotal, confirmationTotal)
+    return t;
+    
+
+
 };
 
 
+const inventory_render = async (d, mask, lysol, sanitizer, time) => {
+    console.log(d);
+    let formatted_time = (d) => {
+        let date = new Date(d.time);
+        let hours = () => {
+            if (date.getHours() > 12){
+                return {
+                    hours: date.getHours() - 12,
+                    ampm: ' PM',
+                }
+            }else{
+                return{
+                    hours: date.getHours(),
+                    ampm: ' AM',
+                }
+            }
+        };    
 
-export { searching, facility_render, get_survey_data, filter_data, clear_div }
+        return date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + hours().hours + ':' + date.getMinutes() + ':' + date.getSeconds() + hours().ampm ;
+    }
+
+    console.log(d);
+    mask.innerText = d.masks;
+    lysol.innerText = d.lysols;
+    sanitizer.innerText = d.sanitizers;
+    time.innerText = formatted_time(d);
+    
+
+};
+
+export { inventory_render, get_survey_data, clear_div }
