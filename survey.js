@@ -63,7 +63,6 @@ const total = (update, shipment, confirmation) => {
     
     let obj = {};
     let time = update.properties.CreationDate;
-    console.log(time)
     for(let i = 0; i < list.length; i++){
         let item = list[i];
         obj[item] = (update.properties[`total_${item}`] + shipment[item]) - confirmation[item];
@@ -167,7 +166,6 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
 
 
 const inventory_render = async (d, mask, lysol, sanitizer, time) => {
-    console.log(d);
     let formatted_time = (d) => {
         let date = new Date(d.time);
         let hours = () => {
@@ -183,11 +181,9 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
                 }
             }
         };    
-
         return date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + hours().hours + ':' + date.getMinutes() + ':' + date.getSeconds() + hours().ampm ;
     }
 
-    console.log(d);
     mask.innerText = d.masks;
     lysol.innerText = d.lysols;
     sanitizer.innerText = d.sanitizers;
