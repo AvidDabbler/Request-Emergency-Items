@@ -1,5 +1,5 @@
 import { agol } from './private.js';
-import { inventory_render, get_survey_data, clear_div } from './survey.js';
+import { inventory_render, get_survey_data, clear_div, check_for_data } from './survey.js';
 
 (function (){    
     
@@ -42,10 +42,6 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
         
         // TARGET VARIABLES
         const iframe_target = event.target.closest('#ifrm');
-        const request_target = event.target.closest('#request');
-        const refresh = event.target.closest('#refresh');
-        const request_list_target = event.target.closest('#request-list');
-        const back = event.target.closest('#back');
         const link = event.target.closest('.link');
         
         if(!link){
@@ -56,32 +52,6 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
             iframe_div.parentNode.removeChild(iframe_div);
             return;
         
-        }else if(!iframe_div){
-    
-            if(request_target){
-    
-            }
-            
-
-
-        // CLICK LIST ITEM
-        }else if (refresh){                
-            let item = event.target.closest('.openpop');
-            let url = item.getAttribute('data-url');
-            let ifrm = document.createElement('iframe');
-
-            ifrm.setAttribute('id', 'ifrm'); // assign an id
-            ifrm.setAttribute(`src`, url);
-        
-            // to place before another page element
-            var el = document.getElementById('marker');
-            main.parentNode.insertBefore(ifrm, el);
-            
-    
-        // CLICK LIST ELEMENT AND OPEN IFRAME!!!
-        }else if(requests){
-            console.log('Not list_div');
-            return; 
         }
         else{
             console.error('Unregistered Click');
@@ -89,9 +59,10 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
         }
     }
     
-    get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+    check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
     .then(data => {
-        inventory_render(data, num_masks, num_lysol, num_sanitizers, update_time);
+        inventory_render(data.total, num_masks, num_lysol, num_sanitizers, update_time);
+
         return data;
     });
     window.addEventListener("click", clickEvent, false);

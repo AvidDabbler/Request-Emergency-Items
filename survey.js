@@ -34,8 +34,10 @@ const newest = (array, date) => {
     return newest;
 };
 
-const fetch_newest = async (url, date) => {
+const fetch_newest = async (url, date, name) => {
         let data = await fetch_json(url);
+        localStorage.setItem(name, '{"date": ' + date + ', "data":' + JSON.stringify(data) + '}');
+
         return newest(data, date)
 };
 
@@ -95,6 +97,7 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
     const update = async () => {
         let data = await fetch_json(updateGeo);
         data = await newest_date(data);
+        localStorage.setItem('update','{"date": ' + data.attributes.CreationDate + ', "data":' + JSON.stringify(data) + '}');
 
         return data;
     };
@@ -102,9 +105,9 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
     let updateObj = await update();
 
     // GET YOU SOME DATA!!!
-    const request_data = await fetch_newest(requestGeo, updateObj.attributes.CreationDate);
-    const confirm_data = await fetch_newest(confirmGeo, updateObj.attributes.CreationDate);
-    const shipment_data = await fetch_newest(shipmentGeo, updateObj.attributes.CreationDate);
+    const request_data = await fetch_newest(requestGeo, updateObj.attributes.CreationDate, 'request');
+    const confirm_data = await fetch_newest(confirmGeo, updateObj.attributes.CreationDate, 'confirm');
+    const shipment_data = await fetch_newest(shipmentGeo, updateObj.attributes.CreationDate, 'shipment');
 
     // THE LATEST NUMBERS ARE CALCULATED AS FOLLOWS (UPDATE.item + SHIPMENT_DATA.item) - CONFIRMATION_DATA.item 
     const shipmentCalc = () => {
@@ -158,9 +161,8 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
     const confirmationTotal = confirmationCalc();
 
     const t = total(updateObj, shipmentTotal, confirmationTotal)
+    localStorage.setItem('total',  JSON.stringify(t))
     return t;
-    
-
 
 };
 
@@ -188,8 +190,37 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
     lysol.innerText = d.lysols;
     sanitizer.innerText = d.sanitizers;
     time.innerText = formatted_time(d);
-    
 
 };
 
-export { inventory_render, get_survey_data, clear_div }
+
+const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
+    if(localStorage.getItem('request')){
+        console.log(true)
+        let request = JSON.parse(localStorage.getItem('request'));
+        let requestDate = new Date(request.date);
+        if((new Date() - requestDate) > (30 * 1000) ){
+            get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+        }
+    }else{
+        get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+    }
+    return {
+        request: JSON.parse(localStorage.getItem('request')),
+        shipment: JSON.parse(localStorage.getItem('shipment')),
+        update: JSON.parse(localStorage.getItem('update')),
+        confirm: JSON.parse(localStorage.getItem('confirm')),
+        total: JSON.parse(localStorage.getItem('total')),
+    };
+};
+
+const requestList = (localData) => {
+    let request = localData.request;
+    console.log(request); 
+
+}
+
+
+
+
+export { inventory_render, get_survey_data, clear_div, check_for_data, requestList }
