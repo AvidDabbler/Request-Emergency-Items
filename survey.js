@@ -11,7 +11,7 @@ const clear_div = async (div) => {
 const newest_date = (data) => {
     let newest;
     for(let i = 0; i < data.features.length; i++){
-        if (i == 0 || data.features[i].properties.CreationDate > newest.properties.CreationDate){
+        if (i == 0 || data.features[i].attributes.CreationDate > newest.attributes.CreationDate){
             newest = data.features[i];
         }
     };
@@ -27,7 +27,7 @@ const fetch_json = async (url) => {
 const newest = (array, date) => {
     let newest = []
     for(let i = 0; i < array.features.length; i++){
-        if(array.features[i].properties.CreationDate > date){
+        if(array.features[i].attributes.CreationDate > date){
             newest.push(array.features[i])
         }
     };
@@ -46,9 +46,9 @@ const inventory_calc = (data) => {
     let lysol = 0
     for(let i = 0; i < data.length; i++){
 
-        masks += data[i].properties.shipped_masks;
-        sanitizer += data[i].properties.shipped_sanitizers;
-        lysol += data[i].properties.shipped_lysols;
+        masks += data[i].attributes.shipped_masks;
+        sanitizer += data[i].attributes.shipped_sanitizers;
+        lysol += data[i].attributes.shipped_lysols;
         
     }
     return {
@@ -62,10 +62,10 @@ const total = (update, shipment, confirmation) => {
     const list = ['masks', 'sanitizers', 'lysols']
     
     let obj = {};
-    let time = update.properties.CreationDate;
+    let time = update.attributes.CreationDate;
     for(let i = 0; i < list.length; i++){
         let item = list[i];
-        obj[item] = (update.properties[`total_${item}`] + shipment[item]) - confirmation[item];
+        obj[item] = (update.attributes[`total_${item}`] + shipment[item]) - confirmation[item];
     }
     let time_list = [shipment, confirmation];
 
@@ -102,9 +102,9 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
     let updateObj = await update();
 
     // GET YOU SOME DATA!!!
-    const request_data = await fetch_newest(requestGeo, updateObj.properties.CreationDate);
-    const confirm_data = await fetch_newest(confirmGeo, updateObj.properties.CreationDate);
-    const shipment_data = await fetch_newest(shipmentGeo, updateObj.properties.CreationDate);
+    const request_data = await fetch_newest(requestGeo, updateObj.attributes.CreationDate);
+    const confirm_data = await fetch_newest(confirmGeo, updateObj.attributes.CreationDate);
+    const shipment_data = await fetch_newest(shipmentGeo, updateObj.attributes.CreationDate);
 
     // THE LATEST NUMBERS ARE CALCULATED AS FOLLOWS (UPDATE.item + SHIPMENT_DATA.item) - CONFIRMATION_DATA.item 
     const shipmentCalc = () => {
@@ -114,13 +114,13 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
         let time;
 
         for(let i = 0; i < shipment_data.length; i++){
-            if(i == 0 || time < shipment_data[i].properties.CreationDate ){
-                time = shipment_data[i].properties.CreationDate;
+            if(i == 0 || time < shipment_data[i].attributes.CreationDate ){
+                time = shipment_data[i].attributes.CreationDate;
             }
 
-            masks += shipment_data[i].properties.shipped_masks;
-            sanitizers += shipment_data[i].properties.shipped_sanitizers;
-            lysols += shipment_data[i].properties.shipped_lysols;
+            masks += shipment_data[i].attributes.shipped_masks;
+            sanitizers += shipment_data[i].attributes.shipped_sanitizers;
+            lysols += shipment_data[i].attributes.shipped_lysols;
             
         }
         return {
@@ -137,13 +137,13 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
         let time;
 
         for(let i = 0; i < confirm_data.length; i++){
-            if(i == 0 || time < shipment_data[i].properties.CreationDate ){
+            if(i == 0 || time < shipment_data[i].attributes.CreationDate ){
                 time = shipment_data[i].properties.CreationDate;
             }
 
-            masks += confirm_data[i].properties.confirmed_masks;
-            sanitizers += confirm_data[i].properties.confirmed_sanitizers;
-            lysols += confirm_data[i].properties.confirmed_lysols;
+            masks += confirm_data[i].attributes.confirmed_masks;
+            sanitizers += confirm_data[i].attributes.confirmed_sanitizers;
+            lysols += confirm_data[i].attributes.confirmed_lysols;
             
         }
         return {

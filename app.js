@@ -1,12 +1,7 @@
 import { agol } from './private.js';
 import { inventory_render, get_survey_data, clear_div } from './survey.js';
 
-(function (){
-    
-    
-    // HTML VARIALBES
-    const iframe_div = document.getElementById('ifrm');
-    
+(function (){    
     
     // JAVASCRIPT VARIABLES
     let inventory
@@ -19,20 +14,9 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
     const confirmGeo = agol().confirm_geojson;
     
     
-    //SURVEY URLS
-    const requestSurvey = agol().request_survey;
-    const updateSurvey = agol().update_survey;
-    const shipmentSurvey = agol().shipment_survey;
-    const confirmSurvey = agol().confirm_survey;
-    
-    
-    
     //HTML SECTION SELECTORS
-    const mask = document.getElementById('mask');
-    const lysol = document.getElementById('lysol');
-    const sanitzer = document.getElementById('sanitzer');
+    const iframe_div = document.getElementById('ifrm');
     const main = document.querySelector('#main');
-    const metric_divs = document.querySelector('#metric-divs');
     const num_masks = document.querySelector('#num-masks');
     const num_lysol = document.querySelector('#num-lysol');
     const num_sanitizers = document.querySelector('#num-sanitizer');
@@ -55,17 +39,18 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
     
     
     const clickEvent = (event) => {
-        event.preventDefault();
         
         // TARGET VARIABLES
         const iframe_target = event.target.closest('#ifrm');
-        const search_target = event.target.closest('#search');
-        const list_target = event.target.closest('.openpop');
-        const metric_divs_target = event.target.closest('#metric-divs')
-        const request_target = event.target.closest('#request')
-        const list = event.target.closest('#list')
-        const refresh = event.target.closest('#refresh')
-    
+        const request_target = event.target.closest('#request');
+        const refresh = event.target.closest('#refresh');
+        const request_list_target = event.target.closest('#request-list');
+        const back = event.target.closest('#back');
+        const link = event.target.closest('.link');
+        
+        if(!link){
+            event.preventDefault();
+        }
     
         if(!iframe_target && iframe_div){
             iframe_div.parentNode.removeChild(iframe_div);
@@ -76,16 +61,15 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
             if(request_target){
     
             }
-    
-    
+            
+
+
         // CLICK LIST ITEM
-        }else if (list || refresh){        
-            console.log('list element click')
-        
+        }else if (refresh){                
             let item = event.target.closest('.openpop');
             let url = item.getAttribute('data-url');
-        
             let ifrm = document.createElement('iframe');
+
             ifrm.setAttribute('id', 'ifrm'); // assign an id
             ifrm.setAttribute(`src`, url);
         
@@ -95,7 +79,7 @@ import { inventory_render, get_survey_data, clear_div } from './survey.js';
             
     
         // CLICK LIST ELEMENT AND OPEN IFRAME!!!
-        }else if(!list_target){
+        }else if(requests){
             console.log('Not list_div');
             return; 
         }
