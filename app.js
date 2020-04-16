@@ -37,6 +37,15 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     }};
     
     
+    const refresh = () => {
+        check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+        .then(data => {
+            inventory_render(data.total, num_masks, num_lysol, num_sanitizers, update_time);
+            console.log('refresh')
+
+            return data;
+        });
+    };
     
     const clickEvent = (event) => {
         
@@ -52,19 +61,22 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
             iframe_div.parentNode.removeChild(iframe_div);
             return;
         
-        }
-        else{
+        }else if(refresh){
+            refresh();
+        }else{
             console.error('Unregistered Click');
             return;
         }
     }
     
-    check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
-    .then(data => {
-        inventory_render(data.total, num_masks, num_lysol, num_sanitizers, update_time);
+    refresh();
 
-        return data;
-    });
+    // refresh every 2 minutes
+    setInterval(
+        () => {
+           refresh()
+        }, 120000);
+    
     window.addEventListener("click", clickEvent, false);
 
 })();

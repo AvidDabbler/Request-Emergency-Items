@@ -37,6 +37,12 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
     }};
     
     
+    const refresh = () => {
+        check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
+        .then(data => requestList(data))
+        .then(rdata => main.innerHTML = rdata)
+    };
+    
     
     const clickEvent = (event) => {
         
@@ -84,9 +90,19 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
             console.error('Unregistered Click');
             return;
         }
-    }
-    let localdata = await check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo);
-    requestList( await localdata)
+    };
+
+
+    
+    refresh();
+
+    // refresh every 2 minutes
+    setInterval(
+        () => {
+           refresh()
+            console.log('refresh')
+        }, 120000);
+    
     window.addEventListener("click", clickEvent, false);
 
 })();

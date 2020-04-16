@@ -196,10 +196,11 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
 
 const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
     if(localStorage.getItem('request')){
-        console.log(true)
         let request = JSON.parse(localStorage.getItem('request'));
         let requestDate = new Date(request.date);
-        if((new Date() - requestDate) > (30 * 1000) ){
+
+        // make sure the survey data is no less than 30 seconds old
+        if((new Date() - requestDate) > (120 * 1000) ){
             get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
         }
     }else{
@@ -215,10 +216,22 @@ const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =>
 };
 
 const requestList = (localData) => {
-    let request = localData.request;
-    console.log(request); 
+    let request = localData.request.data.features;
+    console.log(request);
+    let html = ''
+    request.forEach(feature => {
+        html = 
+        `<div id='${feature.attributes.globalid}' class='button_popup fl w-100 '> 
+            <a class='openpop center fl w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' data-oid = ${feature.attributes.objectid}>
+                <h2 class='f3 helvetica fl w-100'>${feature.attributes.requesting_facility}</h2>
+            </a>
+        </div>`
+    })
+    return html;
 
-}
+};
+
+
 
 
 
