@@ -52,8 +52,10 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
         // TARGET VARIABLES
         const iframe_target = event.target.closest('#ifrm');
         const link = event.target.closest('.link');
+        const def = event.target.closest('.def');
+        const refresh_click = event.target.closest('#refresh');
         
-        if(!link){
+        if(!def){
             event.preventDefault();
         }
     
@@ -61,7 +63,8 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
             iframe_div.parentNode.removeChild(iframe_div);
             return;
         
-        }else if(refresh){
+        }else if(refresh_click){
+            console.log('refresh!!!')
             refresh();
         }else{
             console.error('Unregistered Click');

@@ -1,5 +1,6 @@
 import { agol } from './private.js';
-import { get_survey_data,  check_for_data, requestList } from './survey.js';
+import { check_for_data, requestList } from './survey.js';
+import { facilities } from './assets/facilities.js'
 
 (async () => {    
     
@@ -16,7 +17,7 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
     
     //HTML SECTION SELECTORS
     const iframe_div = document.getElementById('ifrm');
-    const main = document.querySelector('#main');
+    const list = document.querySelector('#list');
     const num_masks = document.querySelector('#num-masks');
     const num_lysol = document.querySelector('#num-lysol');
     const num_sanitizers = document.querySelector('#num-sanitizer');
@@ -40,7 +41,7 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
     const refresh = () => {
         check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
         .then(data => requestList(data))
-        .then(rdata => main.innerHTML = rdata)
+        .then(rdata => list.innerHTML = rdata)
     };
     
     
@@ -72,6 +73,8 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
             let item = event.target.closest('.openpop');
             let url = item.getAttribute('data-url');
             let ifrm = document.createElement('iframe');
+            const refresh_click = event.target.closest('#refresh');
+
 
             ifrm.setAttribute('id', 'ifrm'); // assign an id
             ifrm.setAttribute(`src`, url);
@@ -91,8 +94,7 @@ import { get_survey_data,  check_for_data, requestList } from './survey.js';
             return;
         }
     };
-
-
+    const facil = facilities()
     
     refresh();
 

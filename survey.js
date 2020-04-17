@@ -1,3 +1,5 @@
+import { facilities } from './assets/facilities.js'
+const facil = facilities();
 
 // INTERACTIVE HELPER FUNCTIONS
 const clear_div = async (div) => {
@@ -28,7 +30,7 @@ const newest = (array, date) => {
     let newest = []
     for(let i = 0; i < array.features.length; i++){
         if(array.features[i].attributes.CreationDate > date){
-            newest.push(array.features[i])
+            newest.push(array.features[i]);
         }
     };
     return newest;
@@ -36,29 +38,34 @@ const newest = (array, date) => {
 
 const fetch_newest = async (url, date, name) => {
         let data = await fetch_json(url);
+        for(let i in data.features){
+            data.features[i].attributes['requesting_facility_text'] = facil[data.features[i].attributes.requesting_facility];
+        }
+
+        // data[requesting_facility_text'] = 
         localStorage.setItem(name, '{"date": ' + date + ', "data":' + JSON.stringify(data) + '}');
 
         return newest(data, date)
 };
 
-const inventory_calc = (data) => {
-    let array;
-    let masks = 0
-    let sanitizer = 0
-    let lysol = 0
-    for(let i = 0; i < data.length; i++){
+// const inventory_calc = (data) => {
+//     let array;
+//     let masks = 0
+//     let sanitizer = 0
+//     let lysol = 0
+//     for(let i = 0; i < data.length; i++){
 
-        masks += data[i].attributes.shipped_masks;
-        sanitizer += data[i].attributes.shipped_sanitizers;
-        lysol += data[i].attributes.shipped_lysols;
+//         masks += data[i].attributes.shipped_masks;
+//         sanitizer += data[i].attributes.shipped_sanitizers;
+//         lysol += data[i].attributes.shipped_lysols;
         
-    }
-    return {
-        'masks': masks,
-        'sanitizers': sanitizer,
-        'lysols': lysol,
-    };
-};
+//     }
+//     return {
+//         'masks': masks,
+//         'sanitizers': sanitizer,
+//         'lysols': lysol,
+//     };
+// };
 
 const total = (update, shipment, confirmation) => {
     const list = ['masks', 'sanitizers', 'lysols']
@@ -166,25 +173,26 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
 
 };
 
+let formatted_time = (d) => {
+    let date = new Date(d.time);
+    console.log(typeof date)
+    let hours = () => {
+        if (date.getHours() > 12){
+            return {
+                hours: date.getHours() - 12,
+                ampm: ' PM',
+            }
+        }else{
+            return{
+                hours: date.getHours(),
+                ampm: ' AM',
+            }
+        }
+    };    
+    return date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + hours().hours + ':' + date.getMinutes() + ':' + date.getSeconds() + hours().ampm ;
+};
 
 const inventory_render = async (d, mask, lysol, sanitizer, time) => {
-    let formatted_time = (d) => {
-        let date = new Date(d.time);
-        let hours = () => {
-            if (date.getHours() > 12){
-                return {
-                    hours: date.getHours() - 12,
-                    ampm: ' PM',
-                }
-            }else{
-                return{
-                    hours: date.getHours(),
-                    ampm: ' AM',
-                }
-            }
-        };    
-        return date.getMonth() + '-' + date.getDate() + '-' + date.getFullYear() + ' ' + hours().hours + ':' + date.getMinutes() + ':' + date.getSeconds() + hours().ampm ;
-    }
 
     mask.innerText = d.masks;
     lysol.innerText = d.lysols;
@@ -220,20 +228,24 @@ const requestList = (localData) => {
     console.log(request);
     let html = ''
     request.forEach(feature => {
-        html = 
+        let date = feature.attributes.CreationDate;
+        console.log(formatted_time(date))
+
+        html += 
         `<div id='${feature.attributes.globalid}' class='button_popup fl w-100 '> 
             <a class='openpop center fl w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' data-oid = ${feature.attributes.objectid}>
-                <h2 class='f3 helvetica fl w-100'>${feature.attributes.requesting_facility}</h2>
+                <p class='f5 helvetica fl w-100'><b>Facility: </b>${feature.attributes.requesting_facility_text}</p>
+                <p class='f6 helvetica fl w-100'><b>Date/Time: </b>${date}</p>
             </a>
         </div>`
     })
+    html += 
+        `<div id='' class='button_popup fl w-100 '> 
+            <div id='spacing'></div>
+        </div>`
+    
     return html;
 
 };
-
-
-
-
-
 
 export { inventory_render, get_survey_data, clear_div, check_for_data, requestList }
