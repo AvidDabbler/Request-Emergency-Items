@@ -48,24 +48,6 @@ const fetch_newest = async (url, date, name) => {
         return newest(data, date)
 };
 
-// const inventory_calc = (data) => {
-//     let array;
-//     let masks = 0
-//     let sanitizer = 0
-//     let lysol = 0
-//     for(let i = 0; i < data.length; i++){
-
-//         masks += data[i].attributes.shipped_masks;
-//         sanitizer += data[i].attributes.shipped_sanitizers;
-//         lysol += data[i].attributes.shipped_lysols;
-        
-//     }
-//     return {
-//         'masks': masks,
-//         'sanitizers': sanitizer,
-//         'lysols': lysol,
-//     };
-// };
 
 const total = (update, shipment, confirmation) => {
     const list = ['masks', 'sanitizers', 'lysols']
@@ -193,7 +175,6 @@ let formatted_time = (d) => {
 };
 
 const inventory_render = async (d, mask, lysol, sanitizer, time) => {
-
     mask.innerText = d.masks;
     lysol.innerText = d.lysols;
     sanitizer.innerText = d.sanitizers;
@@ -204,6 +185,7 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
 
 const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
     if(localStorage.getItem('request')){
+        console.log('Request exists')
         let request = JSON.parse(localStorage.getItem('request'));
         let requestDate = new Date(request.date);
 
@@ -212,6 +194,7 @@ const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =>
             get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
         }
     }else{
+        console.log('check_for_data() else')
         get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
     }
     return {
@@ -240,7 +223,7 @@ const requestList = (localData) => {
         </div>`
     })
     html += 
-        `<div id='' class='button_popup fl w-100 '> 
+        `<div id='rl-spacing' class='button_popup fl w-100 '> 
             <div id='spacing'></div>
         </div>`
     

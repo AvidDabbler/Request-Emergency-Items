@@ -13,6 +13,13 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     const shipmentGeo = agol().shipment_geojson;
     const confirmGeo = agol().confirm_geojson;
     
+
+    //SURVEY URLS
+    const requestSur = agol().request_survey;
+    const updateSur = agol().update_survey;
+    const shipmentSur = agol().shipment_survey;
+    const confirmSur = agol().confirm_survey;
+    
     
     //HTML SECTION SELECTORS
     const iframe_div = document.getElementById('ifrm');
@@ -40,8 +47,9 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     const refresh = () => {
         check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
         .then(data => {
+            console.log(data)
             inventory_render(data.total, num_masks, num_lysol, num_sanitizers, update_time);
-            console.log('refresh')
+            console.log('refresh') 
 
             return data;
         });
@@ -50,10 +58,12 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     const clickEvent = (event) => {
         
         // TARGET VARIABLES
+        const iframe_div = document.getElementById('ifrm');
         const iframe_target = event.target.closest('#ifrm');
         const link = event.target.closest('.link');
         const def = event.target.closest('.def');
         const refresh_click = event.target.closest('#refresh');
+        const request_target = event.target.closest('#request');
         
         if(!def){
             event.preventDefault();
@@ -62,7 +72,17 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
         if(!iframe_target && iframe_div){
             iframe_div.parentNode.removeChild(iframe_div);
             return;
+        }else if(request_target){
+            console.log(requestSur);
+
+            var ifrm = document.createElement('iframe');
+            ifrm.setAttribute('id', 'ifrm'); // assign an id
+            ifrm.setAttribute(`src`, requestSur);
         
+            // to place before another page element
+            var el = document.getElementById('marker');
+            main.parentNode.insertBefore(ifrm, el);
+
         }else if(refresh_click){
             console.log('refresh!!!')
             refresh();
@@ -70,7 +90,7 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
             console.error('Unregistered Click');
             return;
         }
-    }
+    };
     
     refresh();
 
