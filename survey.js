@@ -157,7 +157,6 @@ const get_survey_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =
 
 let formatted_time = (d) => {
     let date = new Date(d.time);
-    console.log(typeof date)
     let hours = () => {
         if (date.getHours() > 12){
             return {
@@ -185,7 +184,6 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
 
 const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
     if(localStorage.getItem('request')){
-        console.log('Request exists')
         let request = JSON.parse(localStorage.getItem('request'));
         let requestDate = new Date(request.date);
 

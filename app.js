@@ -47,13 +47,22 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     const refresh = () => {
         check_for_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
         .then(data => {
-            console.log(data)
             inventory_render(data.total, num_masks, num_lysol, num_sanitizers, update_time);
-            console.log('refresh') 
-
             return data;
         });
     };
+
+    const make_request = () => {
+        var ifrm = document.createElement('iframe');
+        ifrm.setAttribute('id', 'ifrm'); // assign an id
+        ifrm.setAttribute(`src`, requestSur);
+
+        // to place before another page element
+        var el = document.getElementById('marker');
+        main.parentNode.insertBefore(ifrm, el);
+
+    };
+
     
     const clickEvent = (event) => {
         
@@ -71,23 +80,11 @@ import { inventory_render, get_survey_data, clear_div, check_for_data } from './
     
         if(!iframe_target && iframe_div){
             iframe_div.parentNode.removeChild(iframe_div);
-            return;
         }else if(request_target){
-            console.log(requestSur);
-
-            var ifrm = document.createElement('iframe');
-            ifrm.setAttribute('id', 'ifrm'); // assign an id
-            ifrm.setAttribute(`src`, requestSur);
-        
-            // to place before another page element
-            var el = document.getElementById('marker');
-            main.parentNode.insertBefore(ifrm, el);
-
+            make_request();
         }else if(refresh_click){
-            console.log('refresh!!!')
             refresh();
         }else{
-            console.error('Unregistered Click');
             return;
         }
     };
