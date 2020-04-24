@@ -1,5 +1,5 @@
 import { agol } from './private.js';
-import { inventory_render, get_survey_data, clear_div, check_for_data, iframe_gen } from './survey.js';
+import { inventory_render, check_for_data, iframe_gen } from './survey.js';
 
 (function (){    
     
@@ -20,8 +20,6 @@ import { inventory_render, get_survey_data, clear_div, check_for_data, iframe_ge
     
     
     //HTML SECTION SELECTORS
-    const iframe_div = document.getElementById('ifrm');
-    const main = document.querySelector('#main');
     const num_masks = document.querySelector('#num-masks');
     const num_lysol = document.querySelector('#num-lysol');
     const num_sanitizers = document.querySelector('#num-sanitizer');

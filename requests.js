@@ -1,16 +1,11 @@
 import { agol } from './private.js';
-import { requestList, iframe_gen } from './survey.js';
-import { facilities } from './assets/facilities.js'
+import { requestList } from './survey.js';
 
 (async () => {    
-    
-    // JAVASCRIPT VARIABLES
-    let inventory, requestDate
     
     
     //JSON URLS
     const requestGeo = agol().request_geojson;
-    const confirmSur = agol().confirm_survey;
     
     
     //HTML SECTION SELECTORS
@@ -54,30 +49,17 @@ import { facilities } from './assets/facilities.js'
 
     
     const clickEvent = (event) => {
-        
-        // TARGET VARIABLES
-        const iframe_div = document.getElementById('ifrm');
-        const close_div = document.getElementById('close');
-        
+                
         const link = event.target.closest('.link');
-        const request_item = event.target.closest('.openpop');
         const refresh_target = event.target.closest('#refresh');
-        
-        
-        console.log(event)
+                
         if(!link){
             event.preventDefault();
         }
-        if(event.target.id == 'close-survey'){
-            iframe_div.parentNode.removeChild(iframe_div);
-            close_div.parentNode.removeChild(close_div);
             
-        }else if (refresh_target){  
+        if (refresh_target){  
             refresh();
-        }else if(request_item){    
-            const eve = request_event(event);
-            let url = `${confirmSur}?field:requesting_facility=${eve.facility}&field:request_id=${eve.oid}&field:confirmed_masks=${eve.masks}&field:confirmed_lysols=${eve.lysols}&field:confirmed_sanitizers=${eve.sanitizers}`;
-            iframe_gen('list', url);
+
         }else{
             console.error('Unregistered Click');
             return;
