@@ -1,2 +1,2 @@
-# Request-Emergency-Items
-Mobile first application to request and view request status's for emergency supplies
+# Emergency-Management-Items
+Mobile first application to manage, view and submit requests for emergency items.
