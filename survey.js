@@ -196,11 +196,9 @@ const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) =>
 
 let leadingZero = (num) => {
     if(num<10){
-        console.log('less than 10')
         return '0' + num;
     }
     else{
-        console.log('greater than 10')
         return num;
     }
 };
