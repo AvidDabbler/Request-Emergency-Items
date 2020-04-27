@@ -1,4 +1,5 @@
-import { agol } from './private.js';
+// import { agol } from './private.js';
+import { agol } from './personal_agol.js';
 import { requestList } from './survey.js';
 
 (async () => {    

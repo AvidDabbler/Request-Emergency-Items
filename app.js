@@ -1,4 +1,5 @@
-import { agol } from './private.js';
+// import { agol } from './private.js';
+import { agol } from './personal_agol.js';
 import { inventory_render, check_for_data, iframe_gen } from './survey.js';
 
 (function (){    
