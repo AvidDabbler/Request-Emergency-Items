@@ -1,5 +1,13 @@
 import { facilities } from './assets/facilities.js'
+
 const facil = facilities();
+
+// INTERACTIVE HELPER FUNCTIONS
+const clear_div = async (div) => {
+    div.innerHTML = '';
+    return;
+};
+
 
 
 // DATA HELPER FUNCTIONS
@@ -178,6 +186,15 @@ let formatted_time = () => {
     return leadingZero(d.getMonth())+ '-' + leadingZero(d.getDate()) + '-' + d.getFullYear() + ' ' + leadingZero(hours().hours) + ':' + leadingZero(d.getMinutes()) + ':' + leadingZero(d.getSeconds()) + hours().ampm ;
 };
 
+let leadingZero = (num) => {
+    if(num<10){
+        return '0' + num;
+    }
+    else{
+        return num;
+    }
+};
+
 const inventory_render = async (d, mask, lysol, sanitizer, time) => {
     mask.innerText = d.masks;
     lysol.innerText = d.lysols;
@@ -190,27 +207,38 @@ const inventory_render = async (d, mask, lysol, sanitizer, time) => {
 const check_for_data = async (requestGeo, updateGeo, shipmentGeo, confirmGeo) => {
     let data;
         data = await get_survey_data(requestGeo, updateGeo, shipmentGeo, confirmGeo)
-    // }
     return data;
 };
 
-let leadingZero = (num) => {
-    if(num<10){
-        return '0' + num;
+const requestList = async (reqURL, confirmURL) => {
+    // const response = await fetch(url);
+    // const json = await response.json();
+    // const request = json.features;
+
+    const getdata = (url) => {
+        let data = fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            return data.features
+        })
+        return data
+    };
+
+    const confList = (confd) => {
+        let list = []
+        for(let f in confd){
+            list.push(confd[f].attributes.request_id);
+        } 
+        return list
     }
-    else{
-        return num;
-    }
-};
 
+    let request = await getdata(reqURL);
+    let confirm = await getdata(confirmURL);
+    const confirmList = await confList(confirm);
+    console.log(confirmList);
 
-
-const requestList = async (url) => {
-    const response = await fetch(url);
-    const json = await response.json();
-    const request = json.features;
-    
     let html = ''
+
     request.sort((a,b)=>{
         if(a.attributes.CreationDate > b.attributes.CreationDate){
             return -1;
@@ -220,6 +248,8 @@ const requestList = async (url) => {
             return 0;
         }
     })
+
+
     request.forEach(feature => {
         let d = new Date(feature.attributes.CreationDate);
 
@@ -243,10 +273,29 @@ const requestList = async (url) => {
 
         feature.attributes['requesting_facility_text'] = facil[feature.attributes.requesting_facility];
 
+        const isConfirmed = (feat) => {
+            if(feat.attributes.objectid in confirmList){
+                console.log('confirmed')
+                return{
+                    confirmed: true,
+                    color: 'red',
+                    tag: 'p'
+                }
+            }else{
+                console.log('unconfirmed')
+                return {
+                    confirmed: false,
+                    color: 'blue',
+                    tag: 'a',
+                }
+            }
+        };
+
+
         html += 
         `<div id='${feature.attributes.globalid}' class='button_popup w-90 center dib'> 
-            <a class = 'openpop center w-100 link dim br2 ph3 pv2 mb2 dib white bg-blue' 
-            data-oid = "${feature.attributes.objectid}" data-masks=${feature.attributes.requesting_masks} data-lysols=${feature.attributes.requesting_lysols} data-sanitizers="${feature.attributes.requesting_sanitizers}" data-facility="${feature.attributes.requesting_facility}">
+            <a class = 'openpop center w-100 link dim br2 ph3 pv2 mb2 dib white bg-${isConfirmed(feature).color}' 
+            data-oid = "${feature.attributes.objectid}" data-masks=${feature.attributes.requesting_masks} data-lysols=${feature.attributes.requesting_lysols} data-sanitizers="${feature.attributes.requesting_sanitizers}" data-facility="${feature.attributes.requesting_facility.toString()}">
 
                 <p class='f5 helvetica w-100'><b>Facility: </b>${feature.attributes.requesting_facility_text}</p>
                 <p class='f6 helvetica w-100'><b>Date/Time: </b>${featureDate()}</p>
@@ -260,6 +309,8 @@ const requestList = async (url) => {
 };
 
 const iframe_gen = (divid, url) => {
+    const container = document.createElement('iframe-container');
+
     const div = document.getElementById(divid);
     var ifrm = document.createElement('iframe');
     ifrm.setAttribute('id', 'ifrm'); // assign an id
@@ -268,7 +319,7 @@ const iframe_gen = (divid, url) => {
     var button = document.createElement('div');
     button.setAttribute('id', 'close'); // assign an id
     button.setAttribute('class', 'w-100 center');
-    button.innerHTML = "<a id='close-survey' class='center w-60 helvetica f3 link br2 pv3 mb3 dib white bg-dark-red'>Close</a>";
+    button.innerHTML = "<a id='close-survey' class='center w-30 helvetica f3 link br2 pv3 dib white bg-dark-red'>Close</a>";
 
 
     // to place before another page element
@@ -278,4 +329,4 @@ const iframe_gen = (divid, url) => {
 
 };
 
-export { inventory_render, check_for_data, requestList, iframe_gen }
+export { inventory_render, get_survey_data, clear_div, check_for_data, requestList, iframe_gen } 

@@ -7,6 +7,7 @@ import { requestList } from './survey.js';
     
     //JSON URLS
     const requestGeo = agol().request_geojson;
+    const confirmGeo = agol().confirm_geojson;
     
     
     //HTML SECTION SELECTORS
@@ -28,26 +29,9 @@ import { requestList } from './survey.js';
     
     
     const refresh = () => {
-        requestList(requestGeo)
+        requestList(requestGeo, confirmGeo)
         .then(rdata => list.innerHTML = rdata)
     };
-    
-    const request_event = (event) => {
-        const get_data = (el) => {
-            return `${event.target.closest('.openpop').getAttribute(el)}`
-        }
-        return{
-            oid: get_data('data-oid'),
-            facility: get_data('data-facility'),
-            masks: get_data('data-masks'),
-            sanitizers: get_data('data-sanitizers'),
-            lysols: get_data('data-lysols'),
-
-        }
-    };    
-
-
-
     
     const clickEvent = (event) => {
                 
